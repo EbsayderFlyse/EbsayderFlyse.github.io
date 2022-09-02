@@ -23,7 +23,9 @@
             <li><a href="index.html">Acceuil</a></li>
             <li><a href="rp.html">Rp</a></li>
             
-            <a href="minecraft://?addExternalServer=pikads.ddns|pikads.ddns:12345" >Rejoindre le serveur</a>
+            <a href="minecraft://?addExternalServer=pikads.ddns|pikads.ddns:12345" >Rejoindre le serveur</a> 
+                    <p>État du serveur: <strong id="online">Ouvert</strong></p>
+             <p>Joueurs en lignes: <span id="ponline">0</span> / <span id="max">0</span></p>
         
             </div>
 
@@ -31,7 +33,17 @@
       </div>
     </header>
 
-   
+   <script>$.getJSON('http://api.syfaro.net/minecraft/1.2/server/status?ip=192.168.1.195&port=25565', function(data) {
+                        if(data.status=="success"){
+                            document.getElementById('online').textContent = "En ligne";
+                        } else {
+                            document.getElementById('online').textContent = "Fermé";
+                        }
+                        document.getElementById('max').textContent = data.players.max;
+                        document.getElementById('ponline').textContent = data.players.online;
+                    });
+                    </script>
+                   <script type="text/javascript" src="https://ebsayderflyse.github.io/minecraft.html"</script>
 
     <section id="main">
       <div class="container">
