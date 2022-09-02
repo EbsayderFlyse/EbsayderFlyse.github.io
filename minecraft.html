@@ -24,8 +24,7 @@
             <li><a href="rp.html">Rp</a></li>
             
             <a href="minecraft://?addExternalServer=pikads.ddns|pikads.ddns:12345" >Rejoindre le serveur</a> 
-                    <p>État du serveur: <strong id="online">Ouvert</strong></p>
-             <p>Joueurs en lignes: <span id="ponline">0</span> / <span id="max">0</span></p>
+                  
         
             </div>
 
@@ -33,17 +32,7 @@
       </div>
     </header>
 
-   <script>$.getJSON('http://api.syfaro.net/minecraft/1.2/server/status?ip=192.168.1.195&port=11111', function(data) {
-                        if(data.status=="success"){
-                            document.getElementById('online').textContent = "En ligne";
-                        } else {
-                            document.getElementById('online').textContent = "Fermé";
-                        }
-                        document.getElementById('max').textContent = data.players.max;
-                        document.getElementById('ponline').textContent = data.players.online;
-                    });
-                    </script>
-                   <script type="text/javascript" src="https://ebsayderflyse.github.io/minecraft.html"</script>
+   
 
     <section id="main">
       <div class="container">
@@ -62,7 +51,37 @@ tout et en dev!
         <aside id="sidebar">
           <div class="dark">
             <h3>RENSEIGNEMENT</h3>
-            <p>Rp; Metier; role...</p>
+            <p>
+<?php
+          
+         
+$_ip = "192.168.1.195";
+$_port = "11111";
+$timeout = "3";
+                         
+if ($_ip and $_port and $timeout)
+{ // controle si le serveur est ouvert
+    $statut = @fsockopen("$_ip", $_port, $errno, $errstr, $timeout);
+}
+if($statut)
+{ // serveur ouvert
+    fwrite($statut_sm, "\xFE\x01");
+    $d_m = fread($statut_sm, 1024);
+    if ($d_m != false AND substr($d_m, 0, 1) == "\xFF")
+    {
+    $d_m = substr($d_m, 3);
+    $d_m = mb_convert_encoding($d_m, 'auto', 'UCS-2');
+    $d_m = explode("\x00", $d_m);
+    fclose($statut_sm);
+        // $d_m[2] => 1.5.2         << Version du serveur
+        // $d_m[3] => mincraft.net  << MOTD
+        // $d_m[4] => 106           << Joueurs en lignes
+        // $d_m[5] => 150           << Slots du serveur
+        $d_m = str_replace('§e','',$d_m);// suprime couleur
+        $d_m = str_replace('§b','',$d_m);// suprime couleur
+    }
+    echo :'joueur conecté :'$d_m[4]'/'$d_m[5];
+ }  ?> </p>
           </div>
         </aside>
       </div>
