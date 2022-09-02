@@ -52,36 +52,7 @@ tout et en dev!
           <div class="dark">
             <h3>RENSEIGNEMENT</h3>
             <p>
-<?php
-          
-         
-$_ip = "192.168.1.195";
-$_port = "11111";
-$timeout = "3";
-                         
-if ($_ip and $_port and $timeout)
-{ // controle si le serveur est ouvert
-    $statut = @fsockopen("$_ip", $_port, $errno, $errstr, $timeout);
-}
-if($statut)
-{ // serveur ouvert
-    fwrite($statut_sm, "\xFE\x01");
-    $d_m = fread($statut_sm, 1024);
-    if ($d_m != false AND substr($d_m, 0, 1) == "\xFF")
-    {
-    $d_m = substr($d_m, 3);
-    $d_m = mb_convert_encoding($d_m, 'auto', 'UCS-2');
-    $d_m = explode("\x00", $d_m);
-    fclose($statut_sm);
-        // $d_m[2] => 1.5.2         << Version du serveur
-        // $d_m[3] => mincraft.net  << MOTD
-        // $d_m[4] => 106           << Joueurs en lignes
-        // $d_m[5] => 150           << Slots du serveur
-        $d_m = str_replace('§e','',$d_m);// suprime couleur
-        $d_m = str_replace('§b','',$d_m);// suprime couleur
-    }
-    echo :'joueur conecté :'$d_m[4]'/'$d_m[5];
- }  ?> </p>
+error 548 </p>
           </div>
         </aside>
       </div>
@@ -102,3 +73,45 @@ if($statut)
   <link rel="icon" href="/img/favicon.png">
 
 </head>
+	
+	<?php
+
+define( 'MQ_SERVER_ADDR', '192.168.1.195' );
+define( 'MQ_SERVER_PORT', 11111 );
+define( 'MQ_TIMEOUT', 1 );
+
+require __DIR__ . 'none';
+
+$Query = new MinecraftQuery( );
+
+try
+    {
+        $Query->Connect( MQ_SERVER_ADDR, MQ_SERVER_PORT, MQ_TIMEOUT );
+    }
+    catch( MinecraftQueryException $e )
+    {
+        $Error = $e->getMessage( );
+    }
+ 
+if(isset($Error)){
+    echo '<font color="red">Serveur Fermé</font><br/>';
+    }else{
+        echo '<font color="green">Ouvert</font><br/>';
+        if(($Info = $Query->GetInfo( )) != false){
+  
+        echo $Info['Players'];
+        echo '/';
+        echo $Info['MaxPlayers'];
+  
+        echo '<br/><b>Version du serveur : </b>';
+        echo $Info['Version'];
+  
+        echo '<br/><b>Joueurs en ligne :</b> <br/>';
+        if( ( $Players = $Query->GetPlayers( ) ) !== false ){
+            foreach( $Players as $Player ){
+            echo htmlspecialchars( $Player );
+            }
+        }
+    }
+}
+?>
