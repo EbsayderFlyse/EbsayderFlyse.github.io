@@ -74,7 +74,7 @@ header nav{
 }
 
 header .highlight, header .current a{
-  color:#ff8000;
+  color: white;
   font-weight:bold;
 }
 
